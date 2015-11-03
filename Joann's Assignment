@@ -1,0 +1,54 @@
+It doesn’t look like the for loops inside each of the outcomes are needed – at least in the tests I ran it worked ok regardless of whether the for loop was there or commented out. Each of the commands works on all the records.
+
+What fixed the broken } was adding an ‘if’ after the last else – for pneumonia. I think it was doing the pneumonia regardless of whether it did the others. It explains why it worked when I did it line by line for the specific outcome ie heart attack, but when I ran it as a function it didn’t.
+
+I added a quick check for invalid state. They might have wanted something more elaborate?
+
+best <- function(state, outcome) {
+    
+    data2 <-read.csv("D:\\tkohler\\joanne_r\\outcome-of-care-measures.csv", stringsAsFactors=FALSE, na.strings="Not Available")
+    dat1 <- data2[data2$State==state,]  # data frame with selected state
+    if (nrow(dat1) == 0) {print ("invalid state")
+    return()}
+        
+    if (outcome =="heart attack") {     ## check that state and outcome data are valid
+        dat3 <- dat1[,c(7,2,11)]    # data frame with only needed columns-heart attack  
+        dat3[,3] <- as.numeric(as.factor(dat3[,3]))
+        #for (i in 1:length(dat1)) {
+            dat3[,3]
+            dat3[dat3 =="Not Available"] <- NA  # rename "Not Available" fiels to <NA>
+            
+            dat3 <- na.omit(dat3)  #remove <NA> records from data frame
+            dat3[,3]
+            #}   
+        sorted <- dat3[order(dat3$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack),]
+        head(sorted)
+        d <- with(dat3, dat3$Hospital.Name[which.min(dat3[,3])])
+        
+    } else if (outcome =="heart failure") {
+        dat4 <- dat1[,c(7,2,17)] # data frame with only needed columns-heart failure  
+        dat4[,3] <- as.numeric(as.factor(dat4[,3]))
+        for (i in 1:length(dat1)) {
+            dat4[,3]
+            dat4[dat4 =="Not Available"] <- NA  # rename "Not Available" fiels to <NA>
+            sorted <- dat4[order(dat4$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure),]
+            dat4 <- na.omit(dat4)
+            }              #remove <NA> records from data frame
+        sorted <- dat4[order(dat4$Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure),]
+        head(sorted)
+        d <- with(dat4, dat4$Hospital.Name[which.min(dat4[,3])])
+        
+    } else if (outcome =="pneumonia") {
+        dat5 <- dat1[,c(7,2,23)]   # data frame with only needed columns-pneumonia 
+        dat5[,3] <- as.numeric(as.factor(dat5[,3]))
+        for (i in 1:length(dat1)) {
+            dat5[,3]
+            dat5[dat5 =="Not Available"] <- NA  # rename "Not Available" fiels to <NA>
+            dat5 <- na.omit(dat5)}            #remove <NA> records from data frame
+        d <- with(dat5, dat5$Hospital.Name[which.min(dat5[,3])]) 
+    }
+    a <-as.vector(d)
+    print(a)
+}
+
+
